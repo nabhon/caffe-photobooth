@@ -1,5 +1,7 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
+import fs from 'fs'
+import os from 'os'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
@@ -10,6 +12,9 @@ function createWindow(): void {
     height: 670,
     show: false,
     autoHideMenuBar: true,
+    fullscreen: true, // Kiosk mode
+    frame: false,     // Remove window chrome/bars
+    kiosk: true,      // Lock down OS gestures
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -51,6 +56,25 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+
+  ipcMain.on('print-image', (_event, imageBuffer) => {
+    const tempPath = join(os.tmpdir(), `print-${Date.now()}.png`)
+    fs.writeFileSync(tempPath, Buffer.from(imageBuffer))
+
+    const printWindow = new BrowserWindow({ show: false })
+    printWindow.loadFile(tempPath)
+    printWindow.webContents.on('did-finish-load', () => {
+        printWindow.webContents.print({ silent: true }, (success, errorType) => {
+            if (!success) console.log(errorType)
+            printWindow.close()
+            try {
+              fs.unlinkSync(tempPath)
+            } catch (e) {
+              console.error('Failed to cleanup temp print file:', e)
+            }
+        })
+    })
+  })
 
   createWindow()
 
