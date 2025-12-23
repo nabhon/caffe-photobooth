@@ -17,17 +17,33 @@ const CapturePage = (): React.JSX.Element => {
 
     // Create a canvas to crop the image
     const canvas = document.createElement('canvas')
-    const size = Math.min(video.videoWidth, video.videoHeight)
-    canvas.width = size
-    canvas.height = size
     
-    // Calculate crop coordinates (center crop)
-    const x = (video.videoWidth - size) / 2
-    const y = (video.videoHeight - size) / 2
+    // Calculate crop dimensions for 5:4 aspect ratio
+    const videoAspectRatio = video.videoWidth / video.videoHeight
+    const targetAspectRatio = 5 / 4
+    
+    let renderWidth, renderHeight, startX, startY
+
+    if (videoAspectRatio > targetAspectRatio) {
+      // Video is wider than target (e.g., 16:9 vs 5:4) -> Fit Height, Crop Width
+      renderHeight = video.videoHeight
+      renderWidth = video.videoHeight * targetAspectRatio
+      startX = (video.videoWidth - renderWidth) / 2
+      startY = 0
+    } else {
+      // Video is taller or equal -> Fit Width, Crop Height (unlikely for webcam landscape, but good for safety)
+      renderWidth = video.videoWidth
+      renderHeight = video.videoWidth / targetAspectRatio
+      startX = 0
+      startY = (video.videoHeight - renderHeight) / 2
+    }
+
+    canvas.width = renderWidth
+    canvas.height = renderHeight
 
     const ctx = canvas.getContext('2d')
     if (ctx) {
-        ctx.drawImage(video, x, y, size, size, 0, 0, size, size)
+        ctx.drawImage(video, startX, startY, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight)
         const imageSrc = canvas.toDataURL('image/jpeg')
         
         setFlash(true)
@@ -95,14 +111,10 @@ const CapturePage = (): React.JSX.Element => {
             videoConstraints={{ width: 1280, height: 720, facingMode: 'user' }}
             className="webcam-feed"
         />
-        <div className="mask-overlay"></div>
       </div>
       {countdown !== null && countdown > 0 && (
         <div className="countdown-overlay">{countdown}</div>
       )}
-      <div className="capture-status">
-        {captures.length} / 3 Photos
-      </div>
     </div>
   )
 }

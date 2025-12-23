@@ -12,8 +12,7 @@ const StartPage = (): React.JSX.Element => {
 
   return (
     <div className="page-container" onClick={() => navigate('/pay')}>
-      <h1>Touch/Click to Start</h1>
-      <p>Welcome to the Photo Booth</p>
+      <h1>Click to Start</h1>
     </div>
   )
 }
