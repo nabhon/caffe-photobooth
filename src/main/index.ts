@@ -86,7 +86,8 @@ app.whenReady().then(() => {
 
   // S3 Client Setup
   const s3Client = new S3Client({
-    region: import.meta.env.VITE_AWS_REGION || 'us-east-1',
+    region: import.meta.env.VITE_AWS_REGION || 'auto',
+    endpoint: import.meta.env.VITE_AWS_ENDPOINT || undefined,
     credentials: {
       accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID || '',
       secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY || ''
