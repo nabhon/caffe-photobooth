@@ -2,11 +2,32 @@
   --primary-color: #3b82f6;
   --bg-color: #f8fafc;
   --text-color: #1e293b;
+  user-select: none;
+}
+
+
+@font-face {
+  font-family: 'Kanit';
+  src: url('./fonts/Kanit-Regular.ttf');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Kanit';
+  src: url('./fonts/Kanit-Medium.ttf');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Kanit';
+  src: url('./fonts/Kanit-Bold.ttf');
+  font-weight: 700;
+  font-style: normal;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Kanit', sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
   overflow: hidden;
@@ -175,6 +196,7 @@ button {
   z-index: 10;
   /* Topmost */
   pointer-events: none;
+  -webkit-user-drag: none;
 }
 
 /* Navigation Buttons */
@@ -182,7 +204,7 @@ button {
 
 .selection-title {
   margin-bottom: 20px;
-  font-size: 2rem;
+  font-size: 4rem;
   font-weight: bold;
 }
 
