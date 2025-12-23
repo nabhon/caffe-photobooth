@@ -3,7 +3,8 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const api = {
-  printImage: (buffer: ArrayBuffer) => ipcRenderer.send('print-image', buffer)
+  printImage: (buffer: ArrayBuffer) => ipcRenderer.send('print-image', buffer),
+  uploadImage: (base64: string): Promise<string> => ipcRenderer.invoke('upload-image', base64)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

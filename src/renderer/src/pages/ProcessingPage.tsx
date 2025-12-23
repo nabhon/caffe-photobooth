@@ -143,11 +143,9 @@ const ProcessingPage = (): React.JSX.Element => {
         // Upload individual photos and create session
         setStatus('Uploading Photos...')
         try {
-          // Convert all images to blobs and upload
-          const uploadPromises = images.map(async (src) => {
-             const res = await fetch(src)
-             const blob = await res.blob()
-             return uploadToS3(blob)
+          // Upload base64 images directly via IPC
+          const uploadPromises = images.map((src) => {
+             return uploadToS3(src)
           })
 
           const keys = await Promise.all(uploadPromises)

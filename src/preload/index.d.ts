@@ -5,6 +5,7 @@ declare global {
     electron: ElectronAPI
     api: {
       printImage: (buffer: ArrayBuffer) => void
+      uploadImage: (base64: string) => Promise<string>
     }
   }
 }

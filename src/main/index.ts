@@ -4,6 +4,9 @@ import fs from 'fs'
 import os from 'os'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+import { v4 as uuidv4 } from 'uuid'
+
 
 function createWindow(): void {
   // Create the browser window.
@@ -79,6 +82,37 @@ app.whenReady().then(() => {
             }
         })
     })
+  })
+
+  // S3 Client Setup
+  const s3Client = new S3Client({
+    region: import.meta.env.VITE_AWS_REGION || 'us-east-1',
+    credentials: {
+      accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID || '',
+      secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY || ''
+    }
+  })
+
+  ipcMain.handle('upload-image', async (_event, base64Image: string) => {
+    try {
+      // Remove header if present (e.g. "data:image/jpeg;base64,")
+      const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, '')
+      const buffer = Buffer.from(base64Data, 'base64')
+      const fileName = `${uuidv4()}.jpg`
+
+      const command = new PutObjectCommand({
+        Bucket: import.meta.env.VITE_AWS_BUCKET_NAME || 'your-bucket-name',
+        Key: fileName,
+        Body: buffer,
+        ContentType: 'image/jpeg'
+      })
+
+      await s3Client.send(command)
+      return fileName
+    } catch (error) {
+      console.error('S3 Upload Error:', error)
+      throw error
+    }
   })
 
   createWindow()
