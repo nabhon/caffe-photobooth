@@ -108,23 +108,114 @@ button {
   z-index: 100;
 }
 
-.frames-grid {
+/* Carousel & Frame Selection */
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
   display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
+  align-items: center;
+  justify-content: center;
 }
 
-.frame-option {
+.carousel-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  flex: 1;
+  /* Allow to shrink/grow */
+  min-width: 0;
+  /* Fix flex overflow */
+  justify-content: flex-start;
+  padding: 100px calc(50% - 150px);
+  /* Center the first item: 150px is half of item width (300px) */
+  gap: 60px;
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+
+.carousel-container::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-slide {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  margin: 0 20px;
+  transition: transform 0.3s ease-out, opacity 0.3s;
   cursor: pointer;
-  width: 150px;
-  transition: transform 0.2s;
+  transform: scale(0.8);
+  opacity: 0.6;
 }
 
-.frame-option:hover {
-  transform: scale(1.05);
+.carousel-slide.active {
+  transform: scale(1.1);
+  opacity: 1;
+  z-index: 10;
 }
 
-.preview-thumbnails {
-  display: flex;
-  gap: 10px;
+/* Frame Preview Composition */
+.frame-preview {
+  position: relative;
+  width: 300px;
+  /* Display width */
+  height: 900px;
+  /* Display height */
+  background: white;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.frame-preview .preview-photo {
+  position: absolute;
+  object-fit: cover;
+  z-index: 1;
+  /* Above background, below frame */
+}
+
+/* The Frame PNG Overlay */
+.frame-preview .preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  /* Topmost */
+  pointer-events: none;
+}
+
+/* Navigation Buttons */
+
+
+.selection-title {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.select-btn {
+  margin-top: 30px;
+  padding: 20px 60px;
+  font-size: 1.8rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 50;
+}
+
+.select-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+}
+
+.select-btn:active {
+  transform: translateY(1px);
 }
