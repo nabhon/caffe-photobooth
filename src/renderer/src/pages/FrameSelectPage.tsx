@@ -31,7 +31,7 @@ const FrameSelectPage = (): React.JSX.Element => {
       </div>
        <div className="preview-thumbnails">
           {images.map((img, idx) => (
-              <img key={idx} src={img} alt={`capture ${idx}`} style={{width: 100}}/>
+              <img key={idx} src={img} alt={`capture ${idx}`} style={{width: 100, height: 100, objectFit: 'cover'}}/>
           ))}
        </div>
     </div>

@@ -12,59 +12,91 @@ const CapturePage = (): React.JSX.Element => {
   const [flash, setFlash] = useState(false)
 
   const capture = useCallback(() => {
-    const imageSrc = webcamRef.current?.getScreenshot()
-    if (imageSrc) {
-      setFlash(true)
-      setTimeout(() => setFlash(false), 200)
-      setCaptures((prev) => [...prev, imageSrc])
+    const video = webcamRef.current?.video
+    if (!video) return
+
+    // Create a canvas to crop the image
+    const canvas = document.createElement('canvas')
+    const size = Math.min(video.videoWidth, video.videoHeight)
+    canvas.width = size
+    canvas.height = size
+    
+    // Calculate crop coordinates (center crop)
+    const x = (video.videoWidth - size) / 2
+    const y = (video.videoHeight - size) / 2
+
+    const ctx = canvas.getContext('2d')
+    if (ctx) {
+        ctx.drawImage(video, x, y, size, size, 0, 0, size, size)
+        const imageSrc = canvas.toDataURL('image/jpeg')
+        
+        setFlash(true)
+        setTimeout(() => setFlash(false), 200)
+        setCaptures((prev) => [...prev, imageSrc])
     }
   }, [webcamRef])
 
+  const [isDelaying, setIsDelaying] = useState(true)
+
   useEffect(() => {
+     // Initial buffer on mount
+     const timer = setTimeout(() => setIsDelaying(false), 2000)
+     return () => clearTimeout(timer)
+  }, [])
+
+  // ... (capture function remains same)
+
+  useEffect(() => {
+    // 1. Check for completion
     if (captures.length >= 3) {
       setImages(captures)
       navigate('/frame-select')
-      return
     }
+  }, [captures, navigate, setImages])
+
+  useEffect(() => {
+    // 2. Start Countdown if idle
+    if (countdown === null && !isDelaying && captures.length < 3) {
+        setCountdown(3)
+    }
+  }, [countdown, isDelaying, captures.length])
+
+  useEffect(() => {
+    // 3. Ticking Logic
+    if (countdown === null) return
 
     let timer: NodeJS.Timeout
-    const startCountdown = (): void => {
-      setCountdown(3) // Start 3s countdown
-      let count = 3
-      timer = setInterval(() => {
-        count -= 1
-        setCountdown(count)
-        if (count === 0) {
-          clearInterval(timer)
-          capture()
-          setCountdown(null)
-          // Wait a bit before next countdown
-          setTimeout(startCountdown, 2000) 
-        }
-      }, 1000)
+
+    if (countdown > 0) {
+        timer = setTimeout(() => {
+            setCountdown((prev) => (prev !== null ? prev - 1 : null))
+        }, 1000)
+    } else if (countdown === 0) {
+        // Trigger capture
+        capture()
+        setCountdown(null)
+        setIsDelaying(true)
+        setTimeout(() => setIsDelaying(false), 2000)
     }
 
-    // specific delay for first run?
-    // For now simple recursion
-    if (countdown === null && captures.length < 3) {
-        startCountdown()
-    }
-
-    return (): void => clearInterval(timer)
-  }, [captures, capture, navigate, setImages])
+    return () => clearTimeout(timer)
+  }, [countdown, capture])
 
   return (
     <div className="page-container capture-page">
       {flash && <div className="flash-overlay" />}
-      <Webcam
-        audio={false}
-        ref={webcamRef}
-        screenshotFormat="image/jpeg"
-        width={1280}
-        height={720}
-        videoConstraints={{ width: 1280, height: 720, facingMode: 'user' }}
-        className="webcam-feed"
-      />
+      <div className="webcam-container">
+        <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            width={1280}
+            height={720}
+            videoConstraints={{ width: 1280, height: 720, facingMode: 'user' }}
+            className="webcam-feed"
+        />
+        <div className="mask-overlay"></div>
+      </div>
       {countdown !== null && countdown > 0 && (
         <div className="countdown-overlay">{countdown}</div>
       )}

@@ -9,11 +9,13 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
-  overflow: hidden; /* Prevent scrolling in kiosk mode */
+  overflow: hidden;
+  /* Prevent scrolling in kiosk mode */
 }
 
-h1, p {
-    text-align: center;
+h1,
+p {
+  text-align: center;
 }
 
 .page-container {
@@ -38,57 +40,91 @@ button {
   margin-top: 20px;
 }
 
+.webcam-container {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+  max-width: 90vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .webcam-feed {
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    max-width: 90%;
-    max-height: 80vh;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mask-overlay {
+  position: absolute;
+  /* Create a square hole in a dim background */
+  /* Assuming 720p height, square is 720x720 centered */
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 720px;
+  height: 720px;
+  /* Use Aspect Ratio if needed, but 720px matches height */
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  z-index: 10;
+  pointer-events: none;
 }
 
 .flash-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: white;
-    z-index: 999;
-    animation: flash 0.2s ease-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  z-index: 999;
+  animation: flash 0.2s ease-out;
 }
 
 @keyframes flash {
-    from { opacity: 1; }
-    to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 
 .countdown-overlay {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 10rem;
-    color: white;
-    text-shadow: 0 0 10px rgba(0,0,0,0.5);
-    z-index: 100;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10rem;
+  color: white;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 100;
 }
 
 .frames-grid {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .frame-option {
-    cursor: pointer;
-    width: 150px;
-    transition: transform 0.2s;
+  cursor: pointer;
+  width: 150px;
+  transition: transform 0.2s;
 }
 
 .frame-option:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .preview-thumbnails {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }

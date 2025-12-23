@@ -17,8 +17,8 @@ const ProcessingPage = (): React.JSX.Element => {
       const ctx = canvas.getContext('2d')
       if (!ctx) return
 
-      // Setup canvas size (example 4x6 inch at 300dpi -> 1200x1800)
-      canvas.width = 1200
+      // Setup canvas size (2x6 inch at 300dpi -> 600x1800)
+      canvas.width = 600
       canvas.height = 1800
 
       // Fill background
@@ -40,13 +40,31 @@ const ProcessingPage = (): React.JSX.Element => {
         const loadedImages = await Promise.all(images.map(loadImage))
         
         // Draw photos
-        // Example: 3 photos vertically
-        const photoHeight = 400
-        const startY = 100
+        // Layout: 2x6 strip (600x1800)
+        // Photos: 500x500
+        // X Offset: (600-500)/2 = 50
+        // Margin Top: 50
+        // Gap: 30
+        const photoSize = 500
+        const xOffset = 50
+        const marginTop = 40
+        const gap = 30
+
         loadedImages.forEach((img, idx) => {
-            // Draw scaled image
-            ctx.drawImage(img, 100, startY + (idx * (photoHeight + 50)), 1000, photoHeight)
+            const y = marginTop + (idx * (photoSize + gap))
+            ctx.drawImage(img, xOffset, y, photoSize, photoSize)
         })
+
+        // Footer Text
+        ctx.fillStyle = 'black'
+        ctx.font = 'bold 40px Arial'
+        ctx.textAlign = 'center'
+        // Footer starts at: 40 + 3*(500+30) - 30 (last gap) = 40 + 1590 = 1630 approx?
+        // Pos: 40 + (3*500) + (2*30) = 40 + 1500 + 60 = 1600.
+        // Footer Space: 1600 to 1800.
+        ctx.fillText('My Photo Booth', 300, 1700)
+        ctx.font = '24px Arial'
+        ctx.fillText(new Date().toLocaleDateString(), 300, 1740)
 
         // Draw Frame Overlay (mock)
         // const frameImg = await loadImage(selectedFramePath)
