@@ -114,18 +114,6 @@ const ProcessingPage = (): React.JSX.Element => {
              // Just keeping the photos visible
         }    
 
-        // Footer Text (Optional, if not part of the PNG frame)
-        // If the frame PNG includes the footer design, we might simply overlay text like date 
-        // IF the designs requires it. For now, we'll assume the frame handles semantics or we add minimal date at bottom if space permits.
-        // The last photo ends at: 50 + 3*(400+50) - 50 = 50 + 1350 = 1400.
-        // Canvas height is 1800. We have 400px of footer space.
-        
-        ctx.fillStyle = 'black'
-        ctx.font = '24px sans-serif'
-        ctx.textAlign = 'center'
-        ctx.fillText(new Date().toLocaleDateString(), 300, 1750)
-
-
         // Convert to blob
         canvas.toBlob(async (blob) => {
           if (!blob) return
