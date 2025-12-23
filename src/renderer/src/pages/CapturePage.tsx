@@ -109,7 +109,7 @@ const CapturePage = (): React.JSX.Element => {
       {flash && <div className="flash-overlay" />}
       
       <div className={`starting-overlay ${isStarting ? 'visible' : ''}`}>
-        Starting Soon
+        กำลังจะเริ่ม
       </div>
 
       <div className="webcam-container">

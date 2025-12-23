@@ -11,8 +11,8 @@ const StartPage = (): React.JSX.Element => {
   }, [])
 
   return (
-    <div className="page-container" onClick={() => navigate('/pay')}>
-      <h1>Click to Start</h1>
+    <div className="page-container" onClick={() => navigate('/pay')} style={{ fontSize: '400%' }}>
+      <h1>คลิกเพื่อเริ่มต้น</h1>
     </div>
   )
 }

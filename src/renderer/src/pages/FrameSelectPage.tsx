@@ -103,7 +103,7 @@ const FrameSelectPage = (): React.JSX.Element => {
 
   return (
     <div className="page-container" style={{ background: '#f8fafc' }}>
-      <h1 className="selection-title">Select Your Frame</h1>
+      <h1 className="selection-title">เลือกกรอบของคุณ</h1>
       
       <div className="carousel-wrapper">
         <div className="carousel-container" ref={scrollContainerRef}>
