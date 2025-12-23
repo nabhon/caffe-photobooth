@@ -1,19 +1,27 @@
 import { useNavigate } from 'react-router-dom'
 import { useBooth } from '../context/BoothContext'
+// Dynamically load frames
+const frameModules = import.meta.glob('../assets/frames/frame_*.png', { eager: true })
 
-// Placeholder frames. ideally these are import from assets
-const FRAMES = [
-  { id: '1', name: 'Classic', color: 'red' },
-  { id: '2', name: 'Fun', color: 'blue' },
-  { id: '3', name: 'Elegant', color: 'gold' }
-]
+const FRAMES = Object.entries(frameModules).map(([path, module]) => {
+  const match = path.match(/frame_(\w+)\.png$/)
+  const id = match ? match[1] : 'unknown'
+  // @ts-ignore - casting module to any
+  const src = (module as any).default
+  
+  return {
+    id,
+    name: `Frame ${id}`, // Generates "Frame 1", "Frame 2", etc.
+    src
+  }
+}).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }))
 
 const FrameSelectPage = (): React.JSX.Element => {
   const navigate = useNavigate()
   const { setSelectedFrame, images } = useBooth()
 
   const handleSelect = (frameId: string): void => {
-    setSelectedFrame(frameId) // In real app, this might be a path to PNG
+    setSelectedFrame(frameId)
     navigate('/processing')
   }
 
@@ -23,8 +31,19 @@ const FrameSelectPage = (): React.JSX.Element => {
       <div className="frames-grid">
         {FRAMES.map((frame) => (
           <div key={frame.id} className="frame-option" onClick={() => handleSelect(frame.id)}>
-             <div style={{border: `10px solid ${frame.color}`, width: '100%', height: '200px', position: 'relative'}}>
-                <span style={{position:'absolute', top:'50%', left:'50%', transform:'translate(-50%, -50%)'}}>{frame.name}</span>
+             {/* Show a preview of the frame. 
+                 Ideally this would be a thumbnail, but resizing the big PNG works for now. */}
+             <div style={{width: '200px', height: '600px', position: 'relative', border: '1px solid #ddd'}}>
+                <img src={frame.src} alt={frame.name} style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+                <span style={{
+                    position:'absolute', 
+                    bottom:'10px', 
+                    left:'50%', 
+                    transform:'translate(-50%)',
+                    background: 'rgba(255,255,255,0.7)',
+                    padding: '2px 5px',
+                    borderRadius: '4px'
+                }}>{frame.name}</span>
              </div>
           </div>
         ))}
