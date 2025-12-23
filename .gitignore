@@ -2,7 +2,7 @@ node_modules
 dist
 out
 .env
-.png
+frames/*.png
 .DS_Store
 .eslintcache
 *.log*
