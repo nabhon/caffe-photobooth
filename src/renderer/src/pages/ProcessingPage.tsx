@@ -140,22 +140,34 @@ const ProcessingPage = (): React.JSX.Element => {
           }, 'image/jpeg', 0.95)
         }
 
-        // Convert original single strip to blob for upload
-        canvas.toBlob(async (blob) => {
-          if (!blob) return
+        // Upload individual photos and create session
+        setStatus('Uploading Photos...')
+        try {
+          // Convert all images to blobs and upload
+          const uploadPromises = images.map(async (src) => {
+             const res = await fetch(src)
+             const blob = await res.blob()
+             return uploadToS3(blob)
+          })
 
-          // Upload (Single Strip)
-          setStatus('Uploading...')
-          try {
-            const url = await uploadToS3(blob)
-            setUploadUrl(url)
-            navigate('/result')
-          } catch (e) {
-            console.error(e)
+          const keys = await Promise.all(uploadPromises)
+          
+          setStatus('Creating Session...')
+          // Create session with keys
+          // @ts-ignore - import this from utils
+          const { createScanSession } = await import('../utils/s3Upload')
+          const sessionId = await createScanSession(keys)
+          
+          // Store session ID (or construct a dummy URL for now so QR code works)
+          // Ideally ResultPage should generate the full URL from the ID
+          setUploadUrl(`https://your-viewer-app.com/session/${sessionId}`)
+          
+          navigate('/result')
+        } catch (e) {
+             console.error('Upload flow failed:', e)
              setUploadUrl('https://via.placeholder.com/600x900?text=Upload+Failed')
              navigate('/result')
-          }
-        }, 'image/jpeg', 0.9)
+        }
 
       } catch (err) {
         console.error(err)

@@ -21,16 +21,26 @@ export const uploadToS3 = async (blob: Blob): Promise<string> => {
     Bucket: S3_BUCKET,
     Key: fileName,
     Body: file,
-    ContentType: 'image/jpeg',
-    ACL: 'public-read' // Ensure bucket policy allows this or use presigned URLs
+    ContentType: 'image/jpeg'
   })
 
   try {
     await s3Client.send(command)
-    // Construct public URL (this assumes public access)
-    return `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com/${fileName}`
+    return fileName
   } catch (error) {
     console.error('S3 Upload Error:', error)
     throw error
   }
+}
+
+export const createScanSession = async (photoKeys: string[]): Promise<string> => {
+  // MOCK: In the future, this calls the backend to create a session record
+  console.log('Creating session for keys:', photoKeys)
+  
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500))
+  
+  const sessionId = uuidv4()
+  console.log('Session Created:', sessionId)
+  return sessionId
 }
