@@ -52,12 +52,18 @@ const CapturePage = (): React.JSX.Element => {
     }
   }, [webcamRef])
 
+  const [isStarting, setIsStarting] = useState(true)
   const [isDelaying, setIsDelaying] = useState(true)
 
   useEffect(() => {
-     // Initial buffer on mount
-     const timer = setTimeout(() => setIsDelaying(false), 2000)
-     return () => clearTimeout(timer)
+    // Initial "Starting Soon" buffer (3s)
+    const startTimer = setTimeout(() => setIsStarting(false), 3000)
+    const delayTimer = setTimeout(() => setIsDelaying(false), 5000)
+
+    return () => {
+        clearTimeout(startTimer)
+        clearTimeout(delayTimer)
+    }
   }, [])
 
   // ... (capture function remains same)
@@ -72,10 +78,10 @@ const CapturePage = (): React.JSX.Element => {
 
   useEffect(() => {
     // 2. Start Countdown if idle
-    if (countdown === null && !isDelaying && captures.length < 3) {
+    if (countdown === null && !isDelaying && !isStarting && captures.length < 3) {
         setCountdown(3)
     }
-  }, [countdown, isDelaying, captures.length])
+  }, [countdown, isDelaying, isStarting, captures.length])
 
   useEffect(() => {
     // 3. Ticking Logic
@@ -101,6 +107,11 @@ const CapturePage = (): React.JSX.Element => {
   return (
     <div className="page-container capture-page">
       {flash && <div className="flash-overlay" />}
+      
+      <div className={`starting-overlay ${isStarting ? 'visible' : ''}`}>
+        Starting Soon
+      </div>
+
       <div className="webcam-container">
         <Webcam
             audio={false}
