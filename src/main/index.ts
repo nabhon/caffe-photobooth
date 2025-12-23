@@ -64,7 +64,12 @@ app.whenReady().then(() => {
     const printWindow = new BrowserWindow({ show: false })
     printWindow.loadFile(tempPath)
     printWindow.webContents.on('did-finish-load', () => {
-        printWindow.webContents.print({ silent: true }, (success, errorType) => {
+        printWindow.webContents.print({ 
+            silent: true,
+            deviceName: undefined, // uses default printer
+            pageSize: { width: 101600, height: 152400 }, // 4x6 inches in microns
+            margins: { marginType: 'none' }
+        }, (success, errorType) => {
             if (!success) console.log(errorType)
             printWindow.close()
             try {

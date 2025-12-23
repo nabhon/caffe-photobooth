@@ -114,16 +114,37 @@ const ProcessingPage = (): React.JSX.Element => {
              // Just keeping the photos visible
         }    
 
-        // Convert to blob
+        // Create 4x6 canvas for printing (double strip)
+        const printCanvas = document.createElement('canvas')
+        printCanvas.width = 1200
+        printCanvas.height = 1800
+        const printCtx = printCanvas.getContext('2d')
+        
+        if (printCtx) {
+          // Fill background white first
+          printCtx.fillStyle = 'white'
+          printCtx.fillRect(0, 0, 1200, 1800)
+          
+          // Draw the strip twice side-by-side
+          // Left strip
+          printCtx.drawImage(canvas, 0, 0)
+          // Right strip
+          printCtx.drawImage(canvas, 600, 0) // 600 is width of single strip
+
+          // Convert print canvas to blob for printing
+          printCanvas.toBlob(async (printBlob) => {
+            if (!printBlob) return
+             setStatus('Printing...')
+             const buffer = await printBlob.arrayBuffer()
+             window.api.printImage(buffer)
+          }, 'image/jpeg', 0.95)
+        }
+
+        // Convert original single strip to blob for upload
         canvas.toBlob(async (blob) => {
           if (!blob) return
 
-          // 1. Print
-          setStatus('Printing...')
-          const buffer = await blob.arrayBuffer()
-          window.api.printImage(buffer)
-
-          // 2. Upload
+          // Upload (Single Strip)
           setStatus('Uploading...')
           try {
             const url = await uploadToS3(blob)
